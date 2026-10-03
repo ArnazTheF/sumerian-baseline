@@ -1,0 +1,44 @@
+
+x-common: &common
+  working_dir: /app
+  user: "${HOST_UID:-0}:${HOST_GID:-0}"
+  shm_size: "8gb"                      
+  environment:
+    - HF_TOKEN=${HF_TOKEN:-}          
+    - SUMBASE_LOGLEVEL=${SUMBASE_LOGLEVEL:-INFO}
+    - TASKS=${TASKS:-}                
+  volumes:
+    - ./src:/app/src
+    - ./configs:/app/configs
+    - ./tests:/app/tests
+    - ./scripts:/app/scripts
+    - ./data:/app/data
+    - ./runs:/app/runs
+    - ./hf_cache:/cache
+
+services:
+  gpu:
+    <<: *common
+    image: sumerian-baseline:gpu
+    build:
+      context: .
+      args:
+        TORCH_VARIANT: ${TORCH_VARIANT:-cu128}
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+
+  # CPU-образ: машины без NVIDIA и любой Mac. На Mac контейнер работает в Linux-VM Docker
+  # Desktop и не видит GPU Apple (Metal) — всё считается на CPU.
+  cpu:
+    <<: *common
+    shm_size: "2gb"
+    image: sumerian-baseline:cpu
+    build:
+      context: .
+      args:
+        TORCH_VARIANT: cpu

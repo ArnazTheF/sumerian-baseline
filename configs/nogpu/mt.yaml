@@ -1,0 +1,10 @@
+task: mt
+run_name: nogpu_mt
+seed: 42
+paths: {data_dir: data/lite/mt, output_dir: runs/nogpu_mt, raw_dir: data/raw}
+data: {source: cdli_github, subset: UrIIILineByLine, max_train: 5000, max_valid: 300, max_test: null, dedupe_train: true}
+model: {name: google/byt5-small, prefix: "", max_source_length: 96, max_target_length: 96}
+generation: {num_beams: 4, max_new_tokens: 96, batch_size: 32}
+baselines:
+  zeroshot_model: praeclarum/cuneiform    
+  zeroshot_prefix: "translate Sumerian to English: "

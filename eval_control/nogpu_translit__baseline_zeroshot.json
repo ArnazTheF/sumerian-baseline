@@ -1,0 +1,56 @@
+{
+  "task": "nogpu_translit",
+  "baseline": "baseline_zeroshot",
+  "model": "zeroshot:colesimmons/sumerian-transliteration",
+  "variants": {
+    "raw": {
+      "task": "nogpu_translit",
+      "baseline": "baseline_zeroshot",
+      "model": "zeroshot:colesimmons/sumerian-transliteration",
+      "variant": "raw",
+      "n": 657,
+      "bleu": 91.16,
+      "chrf": 92.22,
+      "exact": 61.95,
+      "len_ratio": 0.99,
+      "empty_pred": 0.3,
+      "degenerate": 0.76,
+      "cer_corpus": 9.93,
+      "cer_mean": 3.78,
+      "cer_median": 0.0
+    },
+    "raw|seen": {
+      "task": "nogpu_translit",
+      "baseline": "baseline_zeroshot",
+      "model": "zeroshot:colesimmons/sumerian-transliteration",
+      "variant": "raw|seen",
+      "n": 654,
+      "bleu": 91.15,
+      "chrf": 92.2,
+      "exact": 62.23,
+      "len_ratio": 0.99,
+      "empty_pred": 0.31,
+      "degenerate": 0.76,
+      "cer_corpus": 9.97,
+      "cer_mean": 3.78,
+      "cer_median": 0.0
+    },
+    "raw|unseen": {
+      "task": "nogpu_translit",
+      "baseline": "baseline_zeroshot",
+      "model": "zeroshot:colesimmons/sumerian-transliteration",
+      "variant": "raw|unseen",
+      "n": 3,
+      "bleu": 93.33,
+      "chrf": 95.63,
+      "exact": 0.0,
+      "len_ratio": 1.0,
+      "empty_pred": 0.0,
+      "degenerate": 0.0,
+      "cer_corpus": 1.81,
+      "cer_mean": 2.49,
+      "cer_median": 1.23
+    }
+  },
+  "seen_in_train_pct": 99.54
+}

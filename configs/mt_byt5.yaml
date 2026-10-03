@@ -1,0 +1,53 @@
+task: mt
+run_name: mt_byt5_small
+seed: 42
+
+paths:
+  data_dir: data/mt                
+  output_dir: runs/mt_byt5_small    
+  raw_dir: data/raw                 
+
+data:
+  source: cdli_github               
+  subset: UrIIILineByLine           
+  max_train: 5000                   
+  max_valid: 400
+  max_test: null                    
+  dedupe_train: true
+
+model:
+  name: google/byt5-small           
+  prefix: ""                        
+  max_source_length: 128            
+  max_target_length: 128
+
+train:
+  epochs: 20
+  batch_size: 32
+  grad_accum: 1
+  lr: 5.0e-4
+  weight_decay: 0.01
+  warmup_ratio: 0.05
+  scheduler: linear
+  optim: adamw_torch
+  label_smoothing: 0.1
+  precision: auto                   
+  gradient_checkpointing: false     
+  eval_strategy: epoch              
+  eval_steps: 500
+  early_stopping_patience: 3
+  metric_for_best: chrf             
+  max_valid_during_train: 400
+  logging_steps: 50
+  num_workers: 2
+  report_to: tensorboard            
+
+generation:
+  num_beams: 4                      
+  train_eval_beams: 1               
+  max_new_tokens: 128
+  batch_size: 64
+
+baselines:
+  zeroshot_model: praeclarum/cuneiform
+  zeroshot_prefix: "translate Sumerian to English: "

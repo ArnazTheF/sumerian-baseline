@@ -1,0 +1,21 @@
+task: translit
+run_name: nogpu_translit
+seed: 42
+paths: {data_dir: data/nogpu/translit, output_dir: runs/nogpu_translit}
+data:
+  source: hf
+  hf_name: colesimmons/SumTablets
+  max_train_tablets: 3000      
+  max_valid_tablets: 0
+  max_test_tablets: 300
+  chunk_mode: surface
+  src_max_chars: 300          
+  tgt_max_chars: 1500
+model: {name: none, prefix: "", max_source_length: 512, max_target_length: 512}
+baselines:
+  zeroshot_model: colesimmons/sumerian-transliteration
+  zeroshot_encoder_tokenizer: colesimmons/SumerianGlyphTokenizer_Roberta
+  zeroshot_decoder_tokenizer: colesimmons/SumerianTransliterationTokenizer_Roberta
+  zeroshot_num_beams: 1        
+  zeroshot_batch_size: 8
+  zeroshot_max_new_tokens: 510

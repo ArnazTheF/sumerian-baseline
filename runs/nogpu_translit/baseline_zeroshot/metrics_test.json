@@ -1,0 +1,11 @@
+{
+  "bleu": 89.87,
+  "chrf": 91.88,
+  "cer": 9.93,
+  "exact_match": 61.95,
+  "n": 657,
+  "baseline": "zeroshot:colesimmons/sumerian-transliteration",
+  "split": "test",
+  "device": "mps",
+  "peak_memory_gb": 14.97
+}

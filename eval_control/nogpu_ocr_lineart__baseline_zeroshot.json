@@ -1,0 +1,64 @@
+{
+  "task": "nogpu_ocr_lineart",
+  "baseline": "baseline_zeroshot",
+  "model": "zeroshot:colesimmons/lineart-ocr",
+  "variants": {
+    "raw": {
+      "task": "nogpu_ocr_lineart",
+      "baseline": "baseline_zeroshot",
+      "model": "zeroshot:colesimmons/lineart-ocr",
+      "variant": "raw",
+      "n": 200,
+      "bleu": 54.9,
+      "chrf": 57.28,
+      "exact": 3.0,
+      "len_ratio": 1.03,
+      "empty_pred": 0.0,
+      "degenerate": 2.0,
+      "cer_corpus": 39.22,
+      "cer_mean": 36.76,
+      "cer_median": 30.61,
+      "line_count_match": 36.0
+    },
+    "signs": {
+      "task": "nogpu_ocr_lineart",
+      "baseline": "baseline_zeroshot",
+      "model": "zeroshot:colesimmons/lineart-ocr",
+      "variant": "signs",
+      "n": 200,
+      "bleu": null,
+      "chrf": 38.31,
+      "exact": 4.5,
+      "len_ratio": 1.01,
+      "empty_pred": 0.0,
+      "degenerate": 1.5,
+      "cer_corpus": 57.8,
+      "cer_mean": 53.16,
+      "cer_median": 46.5
+    },
+    "signs|seen": {
+      "task": "nogpu_ocr_lineart",
+      "baseline": "baseline_zeroshot",
+      "model": "zeroshot:colesimmons/lineart-ocr",
+      "variant": "signs|seen",
+      "n": 200,
+      "bleu": null,
+      "chrf": 38.31,
+      "exact": 4.5,
+      "len_ratio": 1.01,
+      "empty_pred": 0.0,
+      "degenerate": 1.5,
+      "cer_corpus": 57.8,
+      "cer_mean": 53.16,
+      "cer_median": 46.5
+    },
+    "signs|unseen": {
+      "task": "nogpu_ocr_lineart",
+      "baseline": "baseline_zeroshot",
+      "model": "zeroshot:colesimmons/lineart-ocr",
+      "variant": "signs|unseen",
+      "n": 0
+    }
+  },
+  "seen_in_train_pct": 100.0
+}

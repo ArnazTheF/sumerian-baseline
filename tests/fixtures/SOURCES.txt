@@ -1,0 +1,3 @@
+tests/fixtures/mt: первые 300/60/60 строк UrIIILineByLine из
+https://github.com/cdli-gh/Semi-Supervised-NMT-for-Sumerian-English (MIT License, (c) 2020 CDLI).
+tests/fixtures/translit и tests/fixtures/ocr: синтетика, создаётся tests/make_fixtures.py.

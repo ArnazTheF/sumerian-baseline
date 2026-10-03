@@ -1,0 +1,9 @@
+{
+  "bleu": 24.53,
+  "chrf": 44.42,
+  "cer": 77.14,
+  "exact_match": 1.49,
+  "n": 1010,
+  "baseline": "translation_memory",
+  "split": "test"
+}

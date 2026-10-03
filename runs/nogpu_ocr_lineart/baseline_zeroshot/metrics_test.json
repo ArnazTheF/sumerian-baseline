@@ -1,0 +1,9 @@
+{
+  "cer": 53.92,
+  "n": 200,
+  "split": "test",
+  "baseline": "zeroshot:colesimmons/lineart-ocr",
+  "device": "mps",
+  "seconds": 204.6,
+  "peak_memory_gb": 15.2
+}

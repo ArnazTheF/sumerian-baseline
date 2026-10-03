@@ -1,0 +1,9 @@
+task: mt
+run_name: smoke_mt
+seed: 0
+paths: {data_dir: data/smoke/mt, output_dir: runs/smoke_mt}
+data: {source: local, local_dir: tests/fixtures/mt, max_train: 300, max_valid: 30, max_test: 30}
+model: {name: byt5-tiny-random, prefix: "", max_source_length: 192, max_target_length: 192}
+train: {epochs: 1, batch_size: 16, lr: 1.0e-3, precision: fp32, eval_strategy: epoch, metric_for_best: chrf,
+        logging_steps: 5, num_workers: 0, report_to: none}
+generation: {num_beams: 2, train_eval_beams: 1, max_new_tokens: 32, batch_size: 16}

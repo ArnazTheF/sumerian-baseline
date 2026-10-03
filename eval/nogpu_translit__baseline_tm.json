@@ -1,0 +1,47 @@
+{
+  "task": "nogpu_translit",
+  "baseline": "baseline_tm",
+  "model": "translation_memory",
+  "variants": {
+    "raw": {
+      "task": "nogpu_translit",
+      "baseline": "baseline_tm",
+      "model": "translation_memory",
+      "variant": "raw",
+      "n": 657,
+      "bleu": 32.82,
+      "chrf": 40.69,
+      "exact": 8.98,
+      "len_ratio": 0.66,
+      "empty_pred": 0.0,
+      "degenerate": 3.35,
+      "cer_corpus": 69.9,
+      "cer_mean": 67.19,
+      "cer_median": 63.64
+    },
+    "raw|seen": {
+      "task": "nogpu_translit",
+      "baseline": "baseline_tm",
+      "model": "translation_memory",
+      "variant": "raw|seen",
+      "n": 0
+    },
+    "raw|unseen": {
+      "task": "nogpu_translit",
+      "baseline": "baseline_tm",
+      "model": "translation_memory",
+      "variant": "raw|unseen",
+      "n": 657,
+      "bleu": 32.82,
+      "chrf": 40.69,
+      "exact": 8.98,
+      "len_ratio": 0.66,
+      "empty_pred": 0.0,
+      "degenerate": 3.35,
+      "cer_corpus": 69.9,
+      "cer_mean": 67.19,
+      "cer_median": 63.64
+    }
+  },
+  "seen_in_train_pct": 0.0
+}

@@ -1,0 +1,11 @@
+{
+  "bleu": 12.12,
+  "chrf": 48.4,
+  "cer": 79.6,
+  "exact_match": 1.09,
+  "n": 1010,
+  "baseline": "zeroshot:praeclarum/cuneiform",
+  "split": "test",
+  "device": "mps",
+  "peak_memory_gb": 15.29
+}

@@ -1,0 +1,25 @@
+task: ocr
+run_name: nogpu_ocr_lineart
+seed: 42
+paths: {data_dir: data/nogpu/ocr_lineart, output_dir: runs/nogpu_ocr_lineart}
+data:
+  source: hf
+  hf_name: colesimmons/SumTablets_Photos
+  hf_config: lineart_only
+  max_train: 0                
+  max_valid: 0
+  max_test: 200
+  min_target_tokens: 3
+  max_target_tokens: 256       
+  image_max_side: 1024
+model: {encoder: none, image_height: 384, image_width: 384, max_target_length: 256}
+baselines:
+  zeroshot_model: colesimmons/lineart-ocr
+  zeroshot_decoder_tokenizer: colesimmons/SumerianGlyphTokenizer_Roberta
+  zeroshot_image_size: 384
+  zeroshot_image_mean: [0.5, 0.5, 0.5]  
+  zeroshot_image_std: [0.5, 0.5, 0.5]
+  zeroshot_pad_fill: corner              
+  zeroshot_num_beams: 1
+  zeroshot_batch_size: 8
+  zeroshot_max_new_tokens: 258

@@ -1,0 +1,53 @@
+task: translit
+run_name: translit_byt5_small
+seed: 42
+
+paths:
+  data_dir: data/translit
+  output_dir: runs/translit_byt5_small
+
+data:
+  source: hf                       
+  hf_name: colesimmons/SumTablets
+  hf_revision: null                 
+  max_train_tablets: 3000           
+  max_valid_tablets: 300
+  max_test_tablets: 500
+  periods: []                       
+  genres: []                        
+  chunk_mode: surface               
+  src_max_chars: 120               
+  tgt_max_chars: 600
+
+model:
+  name: google/byt5-small
+  prefix: ""
+  max_source_length: 512            
+  max_target_length: 1024
+
+train:
+  epochs: 10
+  batch_size: 8
+  grad_accum: 2
+  lr: 5.0e-4
+  weight_decay: 0.01
+  warmup_ratio: 0.05
+  scheduler: linear
+  optim: adamw_torch
+  label_smoothing: 0.0
+  precision: auto
+  gradient_checkpointing: true      
+  eval_strategy: epoch
+  eval_steps: 500
+  early_stopping_patience: 3
+  metric_for_best: chrf
+  max_valid_during_train: 300
+  logging_steps: 50
+  num_workers: 2
+  report_to: tensorboard
+
+generation:
+  num_beams: 4
+  train_eval_beams: 1
+  max_new_tokens: 1024
+  batch_size: 16

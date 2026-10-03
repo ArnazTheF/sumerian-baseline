@@ -1,0 +1,6 @@
+data/
+runs/
+hf_cache/
+**/__pycache__/
+*.pyc
+.git/

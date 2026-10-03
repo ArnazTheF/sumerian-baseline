@@ -1,0 +1,67 @@
+{
+  "task": "nogpu_mt",
+  "baseline": "baseline_zeroshot",
+  "model": "zeroshot:praeclarum/cuneiform",
+  "variants": {
+    "raw": {
+      "task": "nogpu_mt",
+      "baseline": "baseline_zeroshot",
+      "model": "zeroshot:praeclarum/cuneiform",
+      "variant": "raw",
+      "n": 1010,
+      "bleu": 12.12,
+      "chrf": 48.4,
+      "exact": 1.09,
+      "len_ratio": 1.42,
+      "empty_pred": 0.0,
+      "degenerate": 0.59
+    },
+    "no_placeholder": {
+      "task": "nogpu_mt",
+      "baseline": "baseline_zeroshot",
+      "model": "zeroshot:praeclarum/cuneiform",
+      "variant": "no_placeholder",
+      "n": 788,
+      "bleu": 15.31,
+      "chrf": 50.94,
+      "exact": 1.4,
+      "len_ratio": 1.13,
+      "empty_pred": 0.0,
+      "degenerate": 0.63
+    },
+    "normalized": {
+      "task": "nogpu_mt",
+      "baseline": "baseline_zeroshot",
+      "model": "zeroshot:praeclarum/cuneiform",
+      "variant": "normalized",
+      "n": 788,
+      "bleu": 39.22,
+      "chrf": 59.21,
+      "exact": 18.91,
+      "len_ratio": 1.02,
+      "empty_pred": 0.38,
+      "degenerate": 0.63
+    },
+    "normalized|seen": {
+      "task": "nogpu_mt",
+      "baseline": "baseline_zeroshot",
+      "model": "zeroshot:praeclarum/cuneiform",
+      "variant": "normalized|seen",
+      "n": 0
+    },
+    "normalized|unseen": {
+      "task": "nogpu_mt",
+      "baseline": "baseline_zeroshot",
+      "model": "zeroshot:praeclarum/cuneiform",
+      "variant": "normalized|unseen",
+      "n": 788,
+      "bleu": 39.22,
+      "chrf": 59.21,
+      "exact": 18.91,
+      "len_ratio": 1.02,
+      "empty_pred": 0.38,
+      "degenerate": 0.63
+    }
+  },
+  "seen_in_train_pct": 0.0
+}

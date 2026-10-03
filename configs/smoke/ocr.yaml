@@ -1,0 +1,10 @@
+task: ocr
+run_name: smoke_ocr
+seed: 0
+paths: {data_dir: data/smoke/ocr, output_dir: runs/smoke_ocr}
+data: {source: local, local_dir: tests/fixtures/ocr, max_train: 32, max_valid: 8, max_test: 8}
+model: {encoder: swin-tiny-random, image_height: 256, image_width: 224, grayscale: true, decoder_layers: 1,
+        decoder_dim: 64, decoder_heads: 2, max_target_length: 24, min_char_freq: 1}
+train: {epochs: 1, batch_size: 8, lr: 1.0e-3, precision: fp32, eval_strategy: epoch, logging_steps: 2,
+        num_workers: 0, report_to: none}
+generation: {num_beams: 1, train_eval_beams: 1, batch_size: 8}

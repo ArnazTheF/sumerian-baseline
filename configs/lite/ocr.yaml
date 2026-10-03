@@ -1,0 +1,50 @@
+task: ocr
+run_name: lite_ocr_swin_tiny
+seed: 42
+paths: {data_dir: data/lite/ocr, output_dir: runs/lite_ocr_swin_tiny}
+
+data:
+  source: hf
+  hf_name: colesimmons/SumTablets_Photos
+  hf_config: photo_only
+  hf_revision: null
+  max_train: 2000
+  max_valid: 150
+  max_test: 300
+  min_target_tokens: 3
+  max_target_tokens: 150
+  image_max_side: 768
+  max_scan_factor: 20
+  periods: []
+
+model:
+  encoder: microsoft/swin-tiny-patch4-window7-224
+  image_height: 512
+  image_width: 256
+  grayscale: true
+  decoder_layers: 4
+  decoder_dim: 384
+  decoder_heads: 6
+  dropout: 0.1
+  max_target_length: 150
+  min_char_freq: 2
+
+train:
+  epochs: 25
+  batch_size: 16
+  grad_accum: 1
+  lr: 2.0e-4
+  weight_decay: 0.05
+  warmup_ratio: 0.05
+  scheduler: cosine
+  precision: auto
+  augment: true
+  max_vram_gb: 12
+  eval_strategy: epoch
+  early_stopping_patience: 5
+  max_valid_during_train: 150
+  logging_steps: 50
+  num_workers: 4
+  report_to: tensorboard
+
+generation: {num_beams: 1, train_eval_beams: 1, batch_size: 32}

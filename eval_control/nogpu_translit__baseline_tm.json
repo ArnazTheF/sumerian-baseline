@@ -1,0 +1,56 @@
+{
+  "task": "nogpu_translit",
+  "baseline": "baseline_tm",
+  "model": "translation_memory",
+  "variants": {
+    "raw": {
+      "task": "nogpu_translit",
+      "baseline": "baseline_tm",
+      "model": "translation_memory",
+      "variant": "raw",
+      "n": 657,
+      "bleu": 32.82,
+      "chrf": 40.69,
+      "exact": 8.98,
+      "len_ratio": 0.66,
+      "empty_pred": 0.0,
+      "degenerate": 3.35,
+      "cer_corpus": 69.9,
+      "cer_mean": 67.19,
+      "cer_median": 63.64
+    },
+    "raw|seen": {
+      "task": "nogpu_translit",
+      "baseline": "baseline_tm",
+      "model": "translation_memory",
+      "variant": "raw|seen",
+      "n": 654,
+      "bleu": 32.79,
+      "chrf": 40.65,
+      "exact": 9.02,
+      "len_ratio": 0.66,
+      "empty_pred": 0.0,
+      "degenerate": 3.36,
+      "cer_corpus": 70.01,
+      "cer_mean": 67.26,
+      "cer_median": 63.64
+    },
+    "raw|unseen": {
+      "task": "nogpu_translit",
+      "baseline": "baseline_tm",
+      "model": "translation_memory",
+      "variant": "raw|unseen",
+      "n": 3,
+      "bleu": 39.94,
+      "chrf": 47.55,
+      "exact": 0.0,
+      "len_ratio": 0.7,
+      "empty_pred": 0.0,
+      "degenerate": 0.0,
+      "cer_corpus": 48.98,
+      "cer_mean": 51.28,
+      "cer_median": 61.95
+    }
+  },
+  "seen_in_train_pct": 99.54
+}

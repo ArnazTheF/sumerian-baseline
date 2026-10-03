@@ -1,0 +1,10 @@
+task: translit
+run_name: smoke_translit
+seed: 0
+paths: {data_dir: data/smoke/translit, output_dir: runs/smoke_translit}
+data: {source: local, local_csv: tests/fixtures/translit/sumtablets_sample.csv, chunk_mode: lines,
+       src_max_chars: 60, tgt_max_chars: 300}
+model: {name: byt5-tiny-random, prefix: "", max_source_length: 256, max_target_length: 384}
+train: {epochs: 1, batch_size: 8, lr: 1.0e-3, precision: fp32, eval_strategy: epoch, metric_for_best: chrf,
+        logging_steps: 5, num_workers: 0, report_to: none}
+generation: {num_beams: 1, train_eval_beams: 1, max_new_tokens: 32, batch_size: 16}

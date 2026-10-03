@@ -1,0 +1,47 @@
+{
+  "task": "nogpu_translit",
+  "baseline": "baseline_zeroshot",
+  "model": "zeroshot:colesimmons/sumerian-transliteration",
+  "variants": {
+    "raw": {
+      "task": "nogpu_translit",
+      "baseline": "baseline_zeroshot",
+      "model": "zeroshot:colesimmons/sumerian-transliteration",
+      "variant": "raw",
+      "n": 657,
+      "bleu": 91.16,
+      "chrf": 92.22,
+      "exact": 61.95,
+      "len_ratio": 0.99,
+      "empty_pred": 0.3,
+      "degenerate": 0.76,
+      "cer_corpus": 9.93,
+      "cer_mean": 3.78,
+      "cer_median": 0.0
+    },
+    "raw|seen": {
+      "task": "nogpu_translit",
+      "baseline": "baseline_zeroshot",
+      "model": "zeroshot:colesimmons/sumerian-transliteration",
+      "variant": "raw|seen",
+      "n": 0
+    },
+    "raw|unseen": {
+      "task": "nogpu_translit",
+      "baseline": "baseline_zeroshot",
+      "model": "zeroshot:colesimmons/sumerian-transliteration",
+      "variant": "raw|unseen",
+      "n": 657,
+      "bleu": 91.16,
+      "chrf": 92.22,
+      "exact": 61.95,
+      "len_ratio": 0.99,
+      "empty_pred": 0.3,
+      "degenerate": 0.76,
+      "cer_corpus": 9.93,
+      "cer_mean": 3.78,
+      "cer_median": 0.0
+    }
+  },
+  "seen_in_train_pct": 0.0
+}

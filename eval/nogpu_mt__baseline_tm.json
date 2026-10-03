@@ -1,0 +1,67 @@
+{
+  "task": "nogpu_mt",
+  "baseline": "baseline_tm",
+  "model": "translation_memory",
+  "variants": {
+    "raw": {
+      "task": "nogpu_mt",
+      "baseline": "baseline_tm",
+      "model": "translation_memory",
+      "variant": "raw",
+      "n": 1010,
+      "bleu": 24.53,
+      "chrf": 44.42,
+      "exact": 1.49,
+      "len_ratio": 1.08,
+      "empty_pred": 0.0,
+      "degenerate": 0.69
+    },
+    "no_placeholder": {
+      "task": "nogpu_mt",
+      "baseline": "baseline_tm",
+      "model": "translation_memory",
+      "variant": "no_placeholder",
+      "n": 788,
+      "bleu": 26.64,
+      "chrf": 46.12,
+      "exact": 1.9,
+      "len_ratio": 0.9,
+      "empty_pred": 0.0,
+      "degenerate": 0.89
+    },
+    "normalized": {
+      "task": "nogpu_mt",
+      "baseline": "baseline_tm",
+      "model": "translation_memory",
+      "variant": "normalized",
+      "n": 788,
+      "bleu": 26.64,
+      "chrf": 46.12,
+      "exact": 1.9,
+      "len_ratio": 0.9,
+      "empty_pred": 0.0,
+      "degenerate": 0.89
+    },
+    "normalized|seen": {
+      "task": "nogpu_mt",
+      "baseline": "baseline_tm",
+      "model": "translation_memory",
+      "variant": "normalized|seen",
+      "n": 0
+    },
+    "normalized|unseen": {
+      "task": "nogpu_mt",
+      "baseline": "baseline_tm",
+      "model": "translation_memory",
+      "variant": "normalized|unseen",
+      "n": 788,
+      "bleu": 26.64,
+      "chrf": 46.12,
+      "exact": 1.9,
+      "len_ratio": 0.9,
+      "empty_pred": 0.0,
+      "degenerate": 0.89
+    }
+  },
+  "seen_in_train_pct": 0.0
+}
