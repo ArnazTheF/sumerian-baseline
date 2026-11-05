@@ -1,0 +1,5 @@
+# Дополнение к requirements.txt; для загрузки нужен curl.
+pyarrow>=18,<24
+lxml>=5,<7
+langid==1.1.6
+requests>=2.32,<3

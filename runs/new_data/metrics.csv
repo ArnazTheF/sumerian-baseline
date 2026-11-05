@@ -1,0 +1,6 @@
+task,method,text_variant,evaluated,skipped,BLEU,chrF,CER_percent,exact_match_percent,note
+Перевод,praeclarum/cuneiform,исходный,2467,4,10.12,24.46,86.58,0.49,
+Перевод,praeclarum/cuneiform,нормализованный,2467,4,8.54,26.98,84.3,1.42,
+Транслитерация,colesimmons/sumerian-transliteration,исходный,43213,0,25.78,59.05,30.51,10.27,
+Транслитерация,colesimmons/sumerian-transliteration,нормализованный,43213,0,36.05,61.62,27.67,11.99,
+Распознавание,colesimmons/lineart-ocr,по знакам,1722,0,,,2370.38,0.0,Одиночные знаки; несопоставимо с OCR целых прорисовок

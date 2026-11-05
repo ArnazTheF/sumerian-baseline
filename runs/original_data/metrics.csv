@@ -1,0 +1,6 @@
+task,method,text_variant,evaluated,skipped,BLEU,chrF,CER_percent,exact_match_percent,note
+Перевод,praeclarum/cuneiform,исходный,1010,0,12.12,48.4,79.6,1.09,
+Перевод,translation memory,исходный,1010,0,24.53,44.42,77.14,1.49,
+Транслитерация,colesimmons/sumerian-transliteration,исходный,657,0,89.87,91.88,9.93,61.95,
+Транслитерация,translation memory,исходный,657,0,30.14,39.68,71.12,8.98,
+Распознавание,colesimmons/lineart-ocr,исходный,200,0,,,53.92,,Исходная метрика запуска; OCR-тесты несопоставимы

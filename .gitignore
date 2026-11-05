@@ -1,4 +1,7 @@
-data/
+/data/
+/runs/new_data/evaluation_report.docx
+/legacy/
+/docs
 hf_cache/
 __pycache__/
 *.pyc

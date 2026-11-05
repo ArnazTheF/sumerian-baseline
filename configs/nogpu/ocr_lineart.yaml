@@ -1,7 +1,7 @@
 task: ocr
 run_name: nogpu_ocr_lineart
 seed: 42
-paths: {data_dir: data/nogpu/ocr_lineart, output_dir: runs/nogpu_ocr_lineart}
+paths: {data_dir: data/nogpu/ocr_lineart, output_dir: legacy/technical_runs/original_data/nogpu_ocr_lineart}
 data:
   source: hf
   hf_name: colesimmons/SumTablets_Photos

@@ -49,7 +49,6 @@ zeroshot: dirs
 memcheck: dirs
 	$(PY) memcheck --config $(CFG) --budget-gb $(or $(BUDGET),12) $(O)
 
-# --- лёгкий режим: всё укладывается в 12 ГБ видеопамяти (см. GPU_REQUIREMENTS.md) ---
 lite: dirs
 	$(PY) memcheck --config configs/lite/mt.yaml --budget-gb 12 $(O)
 	$(PY) prepare  --config configs/lite/mt.yaml $(O)

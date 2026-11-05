@@ -4,3 +4,4 @@ hf_cache/
 **/__pycache__/
 *.pyc
 .git/
+legacy/

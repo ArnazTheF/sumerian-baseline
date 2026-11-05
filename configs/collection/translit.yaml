@@ -1,0 +1,19 @@
+task: translit
+run_name: collection_translit
+seed: 42
+paths:
+  data_dir: data/collection/ready/translit
+  output_dir: runs/collection_translit
+data:
+  source: collection
+  collection_root: data/collection
+  test_source: external_candidates
+model: {name: none, prefix: "", max_source_length: 512, max_target_length: 512}
+generation: {num_beams: 1, max_new_tokens: 510, batch_size: 8}
+baselines:
+  zeroshot_model: colesimmons/sumerian-transliteration
+  zeroshot_encoder_tokenizer: colesimmons/SumerianGlyphTokenizer_Roberta
+  zeroshot_decoder_tokenizer: colesimmons/SumerianTransliterationTokenizer_Roberta
+  zeroshot_num_beams: 1
+  zeroshot_batch_size: 8
+  zeroshot_max_new_tokens: 510

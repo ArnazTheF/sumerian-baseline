@@ -1,0 +1,23 @@
+task: ocr
+run_name: collection_ocr_signs
+seed: 42
+paths:
+  data_dir: data/collection/ready/ocr
+  output_dir: runs/collection_ocr_signs
+data:
+  source: collection
+  collection_root: data/collection
+  collection_task: ocr_unicode
+  test_source: test
+model: {encoder: none, image_height: 384, image_width: 384, max_target_length: 32}
+generation: {num_beams: 1, max_new_tokens: 32, batch_size: 8}
+baselines:
+  zeroshot_model: colesimmons/lineart-ocr
+  zeroshot_decoder_tokenizer: colesimmons/SumerianGlyphTokenizer_Roberta
+  zeroshot_image_size: 384
+  zeroshot_image_mean: [0.5, 0.5, 0.5]
+  zeroshot_image_std: [0.5, 0.5, 0.5]
+  zeroshot_pad_fill: corner
+  zeroshot_num_beams: 1
+  zeroshot_batch_size: 8
+  zeroshot_max_new_tokens: 32

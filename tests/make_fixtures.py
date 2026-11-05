@@ -58,7 +58,7 @@ def make_ocr(n: int = 96) -> None:
         for k, g in enumerate(seq):
             x, y = 20 + (k % 3) * 70, 30 + (k // 3) * 90
             draw.rectangle([x - 4, y - 4, x + 50, y + 50], outline=(90, 80, 70))
-            for dx in range(0, 36, 12):  # крупнее, чем шрифт по умолчанию
+            for dx in range(0, 36, 12):
                 for dy in range(0, 36, 12):
                     draw.text((x + dx, y + dy), letters[g], fill=(220, 200, 170), font=font)
         name = f"images/T{i:03d}.jpg"

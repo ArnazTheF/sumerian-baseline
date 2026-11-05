@@ -53,7 +53,8 @@ def zeroshot(cfg: Config, split: str = "test") -> dict:
     gen = cfg.generation
     preds = generate_texts(model, tok, [r["src"] for r in rows], prefix=prefix,
                            batch_size=int(gen.get("batch_size", 32)), num_beams=int(gen.get("num_beams", 4)),
-                           max_new_tokens=int(gen.get("max_new_tokens", 256)))
+                           max_new_tokens=int(gen.get("max_new_tokens", 256)),
+                           max_source_length=int(cfg.model.get("max_source_length", 512)))
     metrics = text_metrics(preds, [r["tgt"] for r in rows])
     from .utils import peak_vram_gb, pick_device
 

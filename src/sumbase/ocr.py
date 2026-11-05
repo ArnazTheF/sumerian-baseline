@@ -21,7 +21,6 @@ TINY_RANDOM_ENCODER = "swin-tiny-random"
 IMAGENET_MEAN, IMAGENET_STD = (0.485, 0.456, 0.406), (0.229, 0.224, 0.225)
 
 
-# изображения
 def letterbox(img: Image.Image, height: int, width: int) -> Image.Image:
     img = img.convert("RGB")
     bg = img.getpixel((0, 0))
@@ -39,10 +38,14 @@ class ImageTransform:
         self.gray = bool(m.get("grayscale", True))
         self.augment = train and bool(cfg.train.get("augment", True))
 
-    def __call__(self, path: str) -> torch.Tensor:
+    def __call__(self, path: str | dict) -> torch.Tensor:
         import torchvision.transforms.functional as F
 
-        img = Image.open(path)
+        if isinstance(path, dict):
+            from .corpus.media import load_image
+            img = load_image(path)
+        else:
+            img = Image.open(path)
         img = ImageOps.exif_transpose(img).convert("RGB")
         if self.gray:
             img = ImageOps.grayscale(img).convert("RGB")
@@ -66,7 +69,7 @@ class OCRDataset(Dataset):
 
     def __getitem__(self, i: int) -> dict:
         r = self.rows[i]
-        return {"pixel_values": self.transform(r["image"]), "labels": self.tok.encode(r["tgt"], self.max_len)}
+        return {"pixel_values": self.transform(r.get("image", r.get("image_ref"))), "labels": self.tok.encode(r["tgt"], self.max_len)}
 
 
 def collate(batch: list[dict]) -> dict:
@@ -78,7 +81,6 @@ def collate(batch: list[dict]) -> dict:
     return {"pixel_values": pixel, "labels": labels}
 
 
-# модель
 def build_ocr_model(cfg: Config, tok: CharTokenizer, encoder=None):
     from transformers import (AutoModel, SwinConfig, SwinModel, TrOCRConfig, TrOCRForCausalLM,
                               VisionEncoderDecoderModel)
@@ -131,7 +133,6 @@ def load_trained_ocr(run_dir: str | Path):
     return CharTokenizer.load(model_dir), model
 
 
-# инференс
 @torch.no_grad()
 def recognize(model, tok: CharTokenizer, cfg: Config, image_paths: list[str], batch_size: int = 16,
               num_beams: int = 1, device: str | None = None) -> list[str]:
@@ -151,7 +152,6 @@ def recognize(model, tok: CharTokenizer, cfg: Config, image_paths: list[str], ba
     return out
 
 
-# обучение
 def train_ocr(cfg: Config, run_test: bool = True) -> dict:
     from transformers import EarlyStoppingCallback, Seq2SeqTrainer, Seq2SeqTrainingArguments
 
@@ -241,7 +241,7 @@ def evaluate_ocr(cfg: Config, run_dir: str | Path, split: str = "test", model=No
     if torch.cuda.is_available():
         torch.cuda.reset_peak_memory_stats()
     t0 = time.time()
-    preds = recognize(model, tok, cfg, [r["image"] for r in rows], batch_size=int(cfg.generation.get("batch_size", 16)),
+    preds = recognize(model, tok, cfg, [r.get("image", r.get("image_ref")) for r in rows], batch_size=int(cfg.generation.get("batch_size", 16)),
                       num_beams=int(cfg.generation.get("num_beams", 1)))
     from .charset import glyph_cer_tokens
 

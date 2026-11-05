@@ -15,7 +15,7 @@ for t in $TASKS; do
 done
 
 echo; echo "=== Итог ==="
-for f in runs/nogpu_*/baseline_*/metrics_test.json; do
+for f in legacy/technical_runs/original_data/nogpu_*/baseline_*/metrics_test.json; do
   [ -f "$f" ] && python - "$f" <<'PY'
 import json, sys
 m = json.load(open(sys.argv[1]))

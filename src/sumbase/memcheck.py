@@ -15,7 +15,6 @@ CUDA_OVERHEAD_GB = 1.0
 FRAGMENTATION = 1.10
 
 
-# модель без весов
 def _text_model(cfg: Config):
     from transformers import AutoConfig, AutoModelForSeq2SeqLM
 
@@ -124,7 +123,7 @@ def _measure_gpu(cfg: Config, batch_size: int) -> dict:
     torch.cuda.empty_cache()
     return {"mode": "measured_on_gpu", "precision": prec, "status": status,
             "peak_allocated_gb": round(peak, 2), "peak_reserved_gb": round(reserved, 2),
-            "total_gb": round(reserved + 0.5, 2)}  # + контекст CUDA
+            "total_gb": round(reserved + 0.5, 2)}  # Контекст CUDA.
 
 
 def _saved_bytes(cfg: Config, model, batch_size: int, half: bool) -> int:

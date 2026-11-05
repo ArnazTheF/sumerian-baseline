@@ -26,7 +26,6 @@ DEFAULTS = {
 _DROP = {"<s>", "</s>", "<pad>", "<mask>"}
 
 
-# пост-обработка
 def tokens_to_translit(tokens: list[str]) -> str:
     text = "".join(t for t in tokens if t not in _DROP)
     text = text.replace("<SURFACE>", "\n").replace("▁", " ").replace("<unk>", "<UNK>")
@@ -52,7 +51,6 @@ def _ids_to_tokens(tok, ids) -> list[str]:
     return tok.convert_ids_to_tokens([int(i) for i in ids if int(i) >= 0])
 
 
-# транслитерация
 @torch.no_grad()
 def zeroshot_translit(cfg: Config, split: str = "test") -> dict:
     from transformers import AutoTokenizer, EncoderDecoderModel
@@ -98,9 +96,13 @@ def _finish_text(cfg: Config, rows: list[dict], preds: list[str], label: str, sp
     return metrics
 
 
-# OCR по прорисовкам
-def pad_square_resize(path: str, size: int, fill: str = "corner") -> Image.Image:
-    img = ImageOps.exif_transpose(Image.open(path)).convert("RGB")
+def pad_square_resize(path: str | dict, size: int, fill: str = "corner") -> Image.Image:
+    if isinstance(path, dict):
+        from .corpus.media import load_image
+        original = load_image(path)
+    else:
+        original = Image.open(path)
+    img = ImageOps.exif_transpose(original).convert("RGB")
     bg = img.getpixel((0, 0)) if fill == "corner" else (255, 255, 255)
     side = max(img.size)
     canvas = Image.new("RGB", (side, side), bg)
@@ -130,7 +132,7 @@ def zeroshot_ocr(cfg: Config, split: str = "test") -> dict:
     t0 = time.time()
     preds: list[str] = []
     for k in range(0, len(rows), bs):
-        pix = torch.stack([F.normalize(F.to_tensor(pad_square_resize(r["image"], size, fill)), mean, std)
+        pix = torch.stack([F.normalize(F.to_tensor(pad_square_resize(r.get("image", r.get("image_ref")), size, fill)), mean, std)
                            for r in rows[k:k + bs]]).to(device)
         gen = model.generate(pixel_values=pix, num_beams=beams, max_new_tokens=max_new,
                              decoder_start_token_id=tok.bos_token_id, eos_token_id=tok.eos_token_id,

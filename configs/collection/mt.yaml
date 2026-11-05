@@ -1,0 +1,23 @@
+task: mt
+run_name: collection_mt
+seed: 42
+paths:
+  data_dir: data/collection/ready/mt
+  output_dir: runs/collection_mt
+data:
+  source: collection
+  collection_root: data/collection
+  test_source: external_candidates
+  input_normalization: cdli_ascii
+  max_train: null
+  max_valid: null
+  max_test: null
+model:
+  name: google/byt5-small
+  prefix: ""
+  max_source_length: 1024
+  max_target_length: 1024
+generation: {num_beams: 4, max_new_tokens: 1024, batch_size: 4}
+baselines:
+  zeroshot_model: praeclarum/cuneiform
+  zeroshot_prefix: "translate Sumerian to English: "

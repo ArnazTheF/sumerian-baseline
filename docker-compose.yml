@@ -32,8 +32,7 @@ services:
               count: all
               capabilities: [gpu]
 
-  # CPU-образ: машины без NVIDIA и любой Mac. На Mac контейнер работает в Linux-VM Docker
-  # Desktop и не видит GPU Apple (Metal) — всё считается на CPU.
+  # Контейнер на Mac не имеет доступа к Metal.
   cpu:
     <<: *common
     shm_size: "2gb"

@@ -1,7 +1,7 @@
 task: translit
 run_name: nogpu_translit
 seed: 42
-paths: {data_dir: data/nogpu/translit, output_dir: runs/nogpu_translit}
+paths: {data_dir: data/nogpu/translit, output_dir: legacy/technical_runs/original_data/nogpu_translit}
 data:
   source: hf
   hf_name: colesimmons/SumTablets

@@ -14,10 +14,9 @@ from .utils import (apply_vram_cap, device_summary, get_logger, peak_vram_gb, pi
 
 log = get_logger(__name__)
 
-TINY_RANDOM = "byt5-tiny-random"  # крошечная случайная модель для смоук-теста без скачивания весов
+TINY_RANDOM = "byt5-tiny-random"  # Случайные веса для смоук-теста.
 
 
-# модель
 def build_text_model(cfg: Config):
     from transformers import (AutoModelForSeq2SeqLM, AutoTokenizer, ByT5Tokenizer, T5Config,
                               T5ForConditionalGeneration)
@@ -47,7 +46,6 @@ def load_trained(run_dir: str | Path):
     return AutoTokenizer.from_pretrained(model_dir), AutoModelForSeq2SeqLM.from_pretrained(model_dir)
 
 
-# данные
 class EncodedDataset(Dataset):
     def __init__(self, items: list[dict]):
         self.items = items
@@ -78,7 +76,6 @@ def encode_rows(rows: list[dict], tok, cfg: Config, drop_long: bool) -> tuple[En
     return EncodedDataset(items), {"kept": len(items), "dropped_long": dropped, "truncated": truncated}
 
 
-# генерация
 @torch.no_grad()
 def generate_texts(model, tok, sources: list[str], prefix: str = "", batch_size: int = 32, num_beams: int = 4,
                    max_new_tokens: int = 256, max_source_length: int = 512, device: str | None = None) -> list[str]:
@@ -98,7 +95,6 @@ def generate_texts(model, tok, sources: list[str], prefix: str = "", batch_size:
     return [text for _, text in sorted(outputs)]
 
 
-# обучение
 def _training_args(cfg: Config, run_dir: Path, bf16: bool, fp16: bool, metric: str, greater: bool):
     from transformers import Seq2SeqTrainingArguments
 
@@ -208,7 +204,6 @@ def train_text(cfg: Config, run_test: bool = True) -> dict:
     return summary
 
 
-# оценка
 def evaluate_text(cfg: Config, run_dir: str | Path, split: str = "test", model=None, tok=None) -> dict:
     run_dir = Path(run_dir)
     if model is None:
