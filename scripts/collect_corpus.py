@@ -1,9 +1,6 @@
 #!/usr/bin/env python3
-"""Загрузка и сборка корпуса."""
-import sys
-from pathlib import Path
+"""Р—Р°РіСЂСѓР·РєР° Рё СЃР±РѕСЂРєР° РєРѕСЂРїСѓСЃР°."""
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 from sumbase.corpus.cli import main
 
 if __name__ == "__main__":

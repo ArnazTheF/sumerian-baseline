@@ -34,7 +34,14 @@ def canon(tokens: list[str]) -> list[str]:
         if t == " ":
             prev = out[-1] if out else ""
             nxt = tokens[i + 1] if i + 1 < len(tokens) else ""
-            if not prev or not nxt or prev.startswith("<") or prev == "..." or nxt.startswith("<") or nxt == "...":
+            if (
+                not prev
+                or not nxt
+                or prev.startswith("<")
+                or prev == "..."
+                or nxt.startswith("<")
+                or nxt == "..."
+            ):
                 continue
         out.append(t)
     return out

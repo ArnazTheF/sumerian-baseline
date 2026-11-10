@@ -1,4 +1,5 @@
 """Доступ к BDTNS с сохранением сессии и проверкой ID."""
+
 from __future__ import annotations
 
 import re
@@ -6,8 +7,8 @@ import time
 from datetime import datetime, timezone
 from pathlib import Path
 
-from lxml import html
 import requests
+from lxml import html
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
 
@@ -35,8 +36,15 @@ class BDTNSPublicSession:
             self.session.close()
         self.session = requests.Session()
         self.session.headers["User-Agent"] = "sumbase-research-corpus/0.2"
-        retry = Retry(total=2, backoff_factor=1, status_forcelist=[429, 500, 502, 503, 504], allowed_methods=["GET"])
-        self.session.mount("https://", HTTPAdapter(max_retries=retry, pool_connections=1, pool_maxsize=1))
+        retry = Retry(
+            total=2,
+            backoff_factor=1,
+            status_forcelist=[429, 500, 502, 503, 504],
+            allowed_methods=["GET"],
+        )
+        self.session.mount(
+            "https://", HTTPAdapter(max_retries=retry, pool_connections=1, pool_maxsize=1)
+        )
         self.get(self.query)
         first = self.get(self.base + "columna1.php?lexema_sello=&lexema=")
         self.started = time.monotonic()
@@ -72,12 +80,19 @@ class BDTNSPublicSession:
         part = path.with_name(path.name + ".part")
         part.write_bytes(response.content)
         part.replace(path)
-        dump(path.with_name(path.name + ".receipt.json"), {
-            "url": response.url, "path": relative, "bytes": path.stat().st_size,
-            "sha256": checksum(path), "downloaded_at":datetime.now(timezone.utc).isoformat(),
-            "http_headers":"\n".join(f"{k}: {v}" for k,v in response.headers.items()),
-            "anonymous_query":self.query, "catalogue_offset":self.offset,
-        })
+        dump(
+            path.with_name(path.name + ".receipt.json"),
+            {
+                "url": response.url,
+                "path": relative,
+                "bytes": path.stat().st_size,
+                "sha256": checksum(path),
+                "downloaded_at": datetime.now(timezone.utc).isoformat(),
+                "http_headers": "\n".join(f"{k}: {v}" for k, v in response.headers.items()),
+                "anonymous_query": self.query,
+                "catalogue_offset": self.offset,
+            },
+        )
         return path
 
     def catalogue(self, relative):
@@ -100,7 +115,9 @@ class BDTNSPublicSession:
         for attempt in range(2):
             href = self.references.get(int(bid))
             if href is None:
-                raise ValueError(f"BDTNS {bid} absent from current page {self.offset}; catalogue ordering changed")
+                raise ValueError(
+                    f"BDTNS {bid} absent from current page {self.offset}; catalogue ordering changed"
+                )
             response = self.get(self.base + href)
             if self.matches(response.content, bid):
                 return self.save(response, relative)

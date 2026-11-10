@@ -9,8 +9,9 @@ data:
   collection_root: data/collection
   collection_task: ocr_unicode
   test_source: test
-model: {encoder: none, image_height: 384, image_width: 384, max_target_length: 32}
-generation: {num_beams: 1, max_new_tokens: 32, batch_size: 8}
+model:
+  { encoder: none, image_height: 384, image_width: 384, max_target_length: 32 }
+generation: { num_beams: 1, max_new_tokens: 32, batch_size: 8 }
 baselines:
   zeroshot_model: colesimmons/lineart-ocr
   zeroshot_decoder_tokenizer: colesimmons/SumerianGlyphTokenizer_Roberta

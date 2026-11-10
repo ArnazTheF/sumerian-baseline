@@ -71,7 +71,11 @@ def prepare_mt(cfg: Config) -> dict:
     out_dir = Path(cfg.paths.data_dir)
     raw_dir = Path(cfg.paths.get("raw_dir", "data/raw")) / "cdli"
     rng = random.Random(cfg.seed)
-    limits = {"train": data.get("max_train"), "valid": data.get("max_valid"), "test": data.get("max_test")}
+    limits = {
+        "train": data.get("max_train"),
+        "valid": data.get("max_valid"),
+        "test": data.get("max_test"),
+    }
 
     splits: dict[str, list[tuple[str, str]]] = {}
     for split in ("train", "valid", "test"):
@@ -91,8 +95,12 @@ def prepare_mt(cfg: Config) -> dict:
     train_src = {s for s, _ in splits["train"]}
     seen = sum(s in train_src for s, _ in splits["test"])
     stats["test_src_seen_in_train_pct"] = round(100 * seen / max(len(splits["test"]), 1), 2)
-    stats["avg_src_chars"] = round(sum(len(s) for s, _ in splits["train"]) / max(len(splits["train"]), 1), 1)
-    stats["avg_tgt_chars"] = round(sum(len(t) for _, t in splits["train"]) / max(len(splits["train"]), 1), 1)
+    stats["avg_src_chars"] = round(
+        sum(len(s) for s, _ in splits["train"]) / max(len(splits["train"]), 1), 1
+    )
+    stats["avg_tgt_chars"] = round(
+        sum(len(t) for _, t in splits["train"]) / max(len(splits["train"]), 1), 1
+    )
     write_json(stats, out_dir / "stats.json")
     log.info("MT-данные готовы: %s", stats)
     return stats

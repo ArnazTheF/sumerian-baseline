@@ -1,26 +1,23 @@
 from __future__ import annotations
 
-import argparse
 from pathlib import Path
+from types import SimpleNamespace
+
+import click
 
 
-def main(argv=None):
-    p = argparse.ArgumentParser(description="Collect, reconcile and export Sumerian corpora")
-    p.add_argument("--root", type=Path, default=Path("data/collection"))
-    sub = p.add_subparsers(dest="command", required=True)
-    f = sub.add_parser("fetch")
-    f.add_argument("--group", choices=["text", "photos", "supplement", "translations", "bdtns", "inventory"], default="text")
-    f.add_argument("--workers", type=int, default=4)
-    f.add_argument("--oracc-scope", choices=["sumerian", "all"], default="sumerian")
-    f.add_argument("--image-budget-gb", type=float, default=4.0)
-    sub.add_parser("build")
-    sub.add_parser("audit")
-    sub.add_parser("verify")
-    sub.add_parser("report")
-    args = p.parse_args(argv)
+def dispatch(args):
     args.root.mkdir(parents=True, exist_ok=True)
     if args.command == "fetch":
-        from .acquire import fetch_photos, fetch_text, fetch_supplement, fetch_translations, fetch_bdtns, fetch_inventory
+        from .acquire import (
+            fetch_bdtns,
+            fetch_inventory,
+            fetch_photos,
+            fetch_supplement,
+            fetch_text,
+            fetch_translations,
+        )
+
         if args.group == "text":
             fetch_text(args.root / "raw", args.workers, args.oracc_scope)
         elif args.group == "photos":
@@ -34,8 +31,46 @@ def main(argv=None):
         else:
             fetch_inventory(args.root / "raw", args.workers)
     elif args.command in {"verify", "report"}:
-        from .report import verify, report
+        from .report import report, verify
+
         (verify if args.command == "verify" else report)(args.root)
     else:
-        from .build import build, audit
+        from .build import audit, build
+
         (build if args.command == "build" else audit)(args.root)
+
+
+@click.group()
+@click.option("--root", type=click.Path(path_type=Path), default=Path("data/collection"))
+@click.pass_context
+def cli(context, root):
+    """Collect, reconcile and export Sumerian corpora."""
+    context.ensure_object(dict)
+    context.obj["root"] = root
+
+
+@cli.command()
+@click.option(
+    "--group",
+    type=click.Choice(["text", "photos", "supplement", "translations", "bdtns", "inventory"]),
+    default="text",
+)
+@click.option("--workers", type=click.IntRange(min=1), default=4)
+@click.option("--oracc-scope", type=click.Choice(["sumerian", "all"]), default="sumerian")
+@click.option("--image-budget-gb", type=float, default=4.0)
+@click.pass_context
+def fetch(context, **kwargs):
+    dispatch(SimpleNamespace(command="fetch", root=context.obj["root"], **kwargs))
+
+
+def register_command(name):
+    @cli.command(name=name)
+    @click.pass_context
+    def command(context):
+        dispatch(SimpleNamespace(command=name, root=context.obj["root"]))
+
+
+def main(argv=None):
+    for command_name in ("build", "audit", "verify", "report"):
+        register_command(command_name)
+    cli.main(args=argv, prog_name="sumbase-corpus")

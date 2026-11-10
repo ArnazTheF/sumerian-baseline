@@ -52,8 +52,8 @@ def mt_normalize(text, lowercase):
 def has_loop(text, n=3, times=3):
     words = text.split()
     for i in range(len(words) - n * times + 1):
-        chunk = words[i:i + n]
-        if all(words[i + k * n:i + (k + 1) * n] == chunk for k in range(1, times)):
+        chunk = words[i : i + n]
+        if all(words[i + k * n : i + (k + 1) * n] == chunk for k in range(1, times)):
             return True
     return False
 
@@ -170,8 +170,13 @@ def load_train_sources(path):
         return set()
     path = Path(path)
     if path.suffix.lower() in {".tsv", ".csv"}:
-        frame = pd.read_csv(path, sep="\t" if path.suffix.lower() == ".tsv" else ",",
-                            quoting=csv.QUOTE_NONE, dtype=str, keep_default_na=False)
+        frame = pd.read_csv(
+            path,
+            sep="\t" if path.suffix.lower() == ".tsv" else ",",
+            quoting=csv.QUOTE_NONE,
+            dtype=str,
+            keep_default_na=False,
+        )
         if "source" not in frame.columns:
             sys.exit(f"В {path} нет колонки source")
         values = frame["source"]
@@ -219,20 +224,36 @@ def markdown_table(frame):
 
 
 def rounded(record):
-    return {k: (None if math.isnan(v) else round(v, 2)) if isinstance(v, float) else v
-            for k, v in record.items()}
+    return {
+        k: (None if math.isnan(v) else round(v, 2)) if isinstance(v, float) else v
+        for k, v in record.items()
+    }
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Пересчёт метрик прогонов с нормализацией и разбивкой по длине")
+    parser = argparse.ArgumentParser(
+        description="Пересчёт метрик прогонов с нормализацией и разбивкой по длине"
+    )
     parser.add_argument("runs", nargs="?", default="runs", help="папка с прогонами")
     parser.add_argument("--out", help="куда писать отчёты (по умолчанию <runs>/eval)")
-    parser.add_argument("--lowercase", action="store_true", help="для перевода сравнивать без учёта регистра")
-    parser.add_argument("--placeholder", action="append", default=[], help="доп. заглушки в эталонах перевода")
-    parser.add_argument("--train-ids", help="файл с P-номерами обучающих табличек для проверки утечки")
-    parser.add_argument("--train-sources", help="txt или tsv с колонкой source из обучающей выборки")
-    parser.add_argument("--sumtablets", nargs="*", metavar="SPLIT",
-                        help="взять P-номера из сплитов SumTablets на Hugging Face (по умолчанию train)")
+    parser.add_argument(
+        "--lowercase", action="store_true", help="для перевода сравнивать без учёта регистра"
+    )
+    parser.add_argument(
+        "--placeholder", action="append", default=[], help="доп. заглушки в эталонах перевода"
+    )
+    parser.add_argument(
+        "--train-ids", help="файл с P-номерами обучающих табличек для проверки утечки"
+    )
+    parser.add_argument(
+        "--train-sources", help="txt или tsv с колонкой source из обучающей выборки"
+    )
+    parser.add_argument(
+        "--sumtablets",
+        nargs="*",
+        metavar="SPLIT",
+        help="взять P-номера из сплитов SumTablets на Hugging Face (по умолчанию train)",
+    )
     parser.add_argument("--bins", type=int, default=4, help="число квантильных корзин по длине")
     parser.add_argument("--worst", type=int, default=20, help="сколько худших примеров сохранять")
     args = parser.parse_args()
@@ -253,7 +274,9 @@ def main():
             continue
         baseline = path.parent.name
         task_dir = path.parent.parent.name
-        meta_path = path.with_name(path.name.replace("predictions_", "metrics_").replace(".tsv", ".json"))
+        meta_path = path.with_name(
+            path.name.replace("predictions_", "metrics_").replace(".tsv", ".json")
+        )
         model = ""
         if meta_path.exists():
             model = json.loads(meta_path.read_text(encoding="utf-8")).get("baseline", "")
@@ -285,29 +308,48 @@ def main():
                 report["seen_in_train_pct"] = round(100 * sub.mean(), 2)
                 for flag, label in [(True, "seen"), (False, "unseen")]:
                     part = sub[sub == flag].index
-                    rec = {**base, "variant": f"{name}|{label}",
-                           **score(list(ref.loc[part]), list(hyp.loc[part]), use_cer, use_bleu)}
+                    rec = {
+                        **base,
+                        "variant": f"{name}|{label}",
+                        **score(list(ref.loc[part]), list(hyp.loc[part]), use_cer, use_bleu),
+                    }
                     summary.append(rounded(rec))
                     report["variants"][f"{name}|{label}"] = rounded(rec)
 
         (out_dir / f"{task_dir}__{baseline}.json").write_text(
-            json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")
+            json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8"
+        )
 
     if not summary:
         sys.exit(f"В {root} не найдено ни одного predictions_*.tsv")
 
     summary_df = pd.DataFrame(summary)
     lead = ["task", "baseline", "variant", "n"]
-    summary_df = summary_df[lead + [c for c in summary_df.columns if c not in lead + ["model"]] + ["model"]]
+    summary_df = summary_df[
+        lead + [c for c in summary_df.columns if c not in lead + ["model"]] + ["model"]
+    ]
     summary_df.to_csv(out_dir / "summary.csv", index=False)
     length_df = pd.DataFrame(length_rows)
     length_df.to_csv(out_dir / "by_length.csv", index=False)
-    pd.concat(worst_frames).to_csv(out_dir / "worst_examples.tsv", sep="\t", index=False,
-                                   quoting=csv.QUOTE_NONE, escapechar="\\")
+    pd.concat(worst_frames).to_csv(
+        out_dir / "worst_examples.tsv",
+        sep="\t",
+        index=False,
+        quoting=csv.QUOTE_NONE,
+        escapechar="\\",
+    )
 
-    text = ["Сводка", "======", "", markdown_table(summary_df.drop(columns=["model"])), "",
-            "По длине эталона (основной вариант)", "===================================", "",
-            markdown_table(length_df.drop(columns=["model"]))]
+    text = [
+        "Сводка",
+        "======",
+        "",
+        markdown_table(summary_df.drop(columns=["model"])),
+        "",
+        "По длине эталона (основной вариант)",
+        "===================================",
+        "",
+        markdown_table(length_df.drop(columns=["model"])),
+    ]
     (out_dir / "summary.md").write_text("\n".join(text) + "\n", encoding="utf-8")
     print("\n".join(text))
     print(f"\nОтчёты сохранены в {out_dir}")

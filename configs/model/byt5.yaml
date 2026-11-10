@@ -1,0 +1,4 @@
+name: google/byt5-small
+prefix: ""
+max_source_length: 128
+max_target_length: 128

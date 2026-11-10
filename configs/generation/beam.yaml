@@ -1,0 +1,4 @@
+num_beams: 4
+train_eval_beams: 1
+max_new_tokens: 128
+batch_size: 64

@@ -1,7 +1,7 @@
 task: ocr
 run_name: lite_ocr_swin_tiny
 seed: 42
-paths: {data_dir: data/lite/ocr, output_dir: runs/lite_ocr_swin_tiny}
+paths: { data_dir: data/lite/ocr, output_dir: runs/lite_ocr_swin_tiny }
 
 data:
   source: hf
@@ -47,4 +47,4 @@ train:
   num_workers: 4
   report_to: tensorboard
 
-generation: {num_beams: 1, train_eval_beams: 1, batch_size: 32}
+generation: { num_beams: 1, train_eval_beams: 1, batch_size: 32 }

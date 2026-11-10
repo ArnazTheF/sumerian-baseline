@@ -8,8 +8,9 @@ data:
   source: collection
   collection_root: data/collection
   test_source: external_candidates
-model: {name: none, prefix: "", max_source_length: 512, max_target_length: 512}
-generation: {num_beams: 1, max_new_tokens: 510, batch_size: 8}
+model:
+  { name: none, prefix: "", max_source_length: 512, max_target_length: 512 }
+generation: { num_beams: 1, max_new_tokens: 510, batch_size: 8 }
 baselines:
   zeroshot_model: colesimmons/sumerian-transliteration
   zeroshot_encoder_tokenizer: colesimmons/SumerianGlyphTokenizer_Roberta

@@ -5,3 +5,8 @@ hf_cache/
 *.pyc
 .git/
 legacy/
+.venv/
+.uv-cache/
+.pre-commit-cache/
+tmp/
+output/

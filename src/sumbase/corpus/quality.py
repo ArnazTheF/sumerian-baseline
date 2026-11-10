@@ -1,4 +1,5 @@
 """Поиск пересечений с train и карантин близких текстов."""
+
 from __future__ import annotations
 
 import json
@@ -10,7 +11,11 @@ from .parsers import loose_fingerprint
 
 def shingles(text, n=3):
     tokens = loose_fingerprint(text).split()
-    return {tuple(tokens[i:i+n]) for i in range(len(tokens)-n+1)} if len(tokens) >= 8 else set()
+    return (
+        {tuple(tokens[i : i + n]) for i in range(len(tokens) - n + 1)}
+        if len(tokens) >= 8
+        else set()
+    )
 
 
 def screen_mt_near_duplicates(folder: Path):
@@ -42,8 +47,12 @@ def screen_mt_near_duplicates(folder: Path):
                     containment = shared / max(1, min(len(values), len(other)))
                     # Коротких общих формул недостаточно для совпадения.
                     if jaccard >= 0.8 or (shared >= 12 and containment >= 0.95):
-                        match = {"train_id": train[i]["id"], "jaccard": round(jaccard, 4),
-                                 "containment": round(containment, 4), "shared_trigrams": shared}
+                        match = {
+                            "train_id": train[i]["id"],
+                            "jaccard": round(jaccard, 4),
+                            "containment": round(containment, 4),
+                            "shared_trigrams": shared,
+                        }
                         break
                 if match:
                     r["near_duplicate"] = match

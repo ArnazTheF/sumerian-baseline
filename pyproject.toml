@@ -6,10 +6,69 @@ build-backend = "setuptools.build_meta"
 name = "sumbase"
 version = "0.1.0"
 description = "Бейзлайны для шумерского: OCR клинописи, транслитерация, перевод"
-requires-python = ">=3.10"
+readme = "README.md"
+requires-python = ">=3.10,<3.13"
+dependencies = [
+  "torch==2.7.1",
+  "torchvision==0.22.1",
+  "transformers==4.57.6",
+  "accelerate>=1.2,<2",
+  "sacrebleu==2.6.0",
+  "rapidfuzz>=3.9,<4",
+  "pyyaml>=6,<7",
+  "pillow>=10,<13",
+  "sentencepiece>=0.2,<0.3",
+  "protobuf>=4.25,<7",
+  "hydra-core>=1.3,<1.4",
+  "click>=8.1,<9",
+]
+
+[project.optional-dependencies]
+train = ["datasets>=3.6,<5", "tensorboard>=2.16,<3", "pandas>=2,<3", "scikit-learn>=1.4,<2"]
+corpus = ["pyarrow>=18,<24", "lxml>=5,<7", "langid==1.1.6", "requests>=2.32,<3"]
+reports = ["python-docx>=1.1,<2", "pandas>=2,<3"]
+cpu = ["torch==2.7.1", "torchvision==0.22.1"]
+cu128 = ["torch==2.7.1", "torchvision==0.22.1"]
+
+[dependency-groups]
+dev = ["pre-commit>=4,<5", "black==25.1.0", "isort==6.0.1", "flake8==7.2.0", "pytest>=8,<9"]
 
 [project.scripts]
 sumbase = "sumbase.__main__:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[tool.uv]
+conflicts = [[{ extra = "cpu" }, { extra = "cu128" }]]
+
+[tool.uv.sources]
+torch = [
+  { index = "pytorch-cpu", extra = "cpu" },
+  { index = "pytorch-cu128", extra = "cu128" },
+]
+torchvision = [
+  { index = "pytorch-cpu", extra = "cpu" },
+  { index = "pytorch-cu128", extra = "cu128" },
+]
+
+[[tool.uv.index]]
+name = "pytorch-cpu"
+url = "https://download.pytorch.org/whl/cpu"
+explicit = true
+
+[[tool.uv.index]]
+name = "pytorch-cu128"
+url = "https://download.pytorch.org/whl/cu128"
+explicit = true
+
+[tool.black]
+line-length = 100
+target-version = ["py310"]
+
+[tool.isort]
+profile = "black"
+line_length = 100
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

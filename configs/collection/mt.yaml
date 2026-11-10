@@ -17,7 +17,7 @@ model:
   prefix: ""
   max_source_length: 1024
   max_target_length: 1024
-generation: {num_beams: 4, max_new_tokens: 1024, batch_size: 4}
+generation: { num_beams: 4, max_new_tokens: 1024, batch_size: 4 }
 baselines:
   zeroshot_model: praeclarum/cuneiform
   zeroshot_prefix: "translate Sumerian to English: "

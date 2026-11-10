@@ -1,0 +1,6 @@
+source: cdli_github
+subset: UrIIILineByLine
+max_train: 5000
+max_valid: 400
+max_test: null
+dedupe_train: true

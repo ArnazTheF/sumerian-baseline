@@ -12,8 +12,17 @@ from torch.utils.data import Dataset
 from .charset import CharTokenizer, canon
 from .config import Config, save_config
 from .metrics import cer
-from .utils import (apply_vram_cap, device_summary, get_logger, peak_vram_gb, pick_device, read_jsonl, resolve_precision,
-                    set_seed, write_json)
+from .utils import (
+    apply_vram_cap,
+    device_summary,
+    get_logger,
+    peak_vram_gb,
+    pick_device,
+    read_jsonl,
+    resolve_precision,
+    set_seed,
+    write_json,
+)
 
 log = get_logger(__name__)
 
@@ -25,7 +34,9 @@ def letterbox(img: Image.Image, height: int, width: int) -> Image.Image:
     img = img.convert("RGB")
     bg = img.getpixel((0, 0))
     scale = min(width / img.width, height / img.height)
-    new = img.resize((max(1, int(img.width * scale)), max(1, int(img.height * scale))), Image.BICUBIC)
+    new = img.resize(
+        (max(1, int(img.width * scale)), max(1, int(img.height * scale))), Image.BICUBIC
+    )
     canvas = Image.new("RGB", (width, height), bg)
     canvas.paste(new, ((width - new.width) // 2, (height - new.height) // 2))
     return canvas
@@ -43,6 +54,7 @@ class ImageTransform:
 
         if isinstance(path, dict):
             from .corpus.media import load_image
+
             img = load_image(path)
         else:
             img = Image.open(path)
@@ -69,7 +81,10 @@ class OCRDataset(Dataset):
 
     def __getitem__(self, i: int) -> dict:
         r = self.rows[i]
-        return {"pixel_values": self.transform(r.get("image", r.get("image_ref"))), "labels": self.tok.encode(r["tgt"], self.max_len)}
+        return {
+            "pixel_values": self.transform(r.get("image", r.get("image_ref"))),
+            "labels": self.tok.encode(r["tgt"], self.max_len),
+        }
 
 
 def collate(batch: list[dict]) -> dict:
@@ -82,26 +97,45 @@ def collate(batch: list[dict]) -> dict:
 
 
 def build_ocr_model(cfg: Config, tok: CharTokenizer, encoder=None):
-    from transformers import (AutoModel, SwinConfig, SwinModel, TrOCRConfig, TrOCRForCausalLM,
-                              VisionEncoderDecoderModel)
+    from transformers import (
+        AutoModel,
+        SwinConfig,
+        SwinModel,
+        TrOCRConfig,
+        TrOCRForCausalLM,
+        VisionEncoderDecoderModel,
+    )
 
     m = cfg.model
     if "swin" in str(m.encoder).lower() and min(int(m.image_height), int(m.image_width)) < 224:
         raise ValueError("Для Swin image_height и image_width должны быть не меньше 224")
     if encoder is not None:
-        pass  
+        pass
     elif m.encoder == TINY_RANDOM_ENCODER:
-        encoder = SwinModel(SwinConfig(embed_dim=24, depths=[1, 1, 1, 1], num_heads=[1, 2, 3, 3], window_size=7))
+        encoder = SwinModel(
+            SwinConfig(embed_dim=24, depths=[1, 1, 1, 1], num_heads=[1, 2, 3, 3], window_size=7)
+        )
     else:
         encoder = AutoModel.from_pretrained(m.encoder)
     d = int(m.get("decoder_dim", 384))
     dec_conf = TrOCRConfig(
-        vocab_size=len(tok), d_model=d, decoder_layers=int(m.get("decoder_layers", 4)),
-        decoder_attention_heads=int(m.get("decoder_heads", 6)), decoder_ffn_dim=4 * d,
-        max_position_embeddings=int(m.max_target_length) + 8, dropout=float(m.get("dropout", 0.1)),
-        activation_function="gelu", use_learned_position_embeddings=True, layernorm_embedding=True,
-        scale_embedding=True, pad_token_id=tok.pad_id, bos_token_id=tok.bos_id, eos_token_id=tok.eos_id,
-        decoder_start_token_id=tok.bos_id, is_decoder=True, add_cross_attention=True,
+        vocab_size=len(tok),
+        d_model=d,
+        decoder_layers=int(m.get("decoder_layers", 4)),
+        decoder_attention_heads=int(m.get("decoder_heads", 6)),
+        decoder_ffn_dim=4 * d,
+        max_position_embeddings=int(m.max_target_length) + 8,
+        dropout=float(m.get("dropout", 0.1)),
+        activation_function="gelu",
+        use_learned_position_embeddings=True,
+        layernorm_embedding=True,
+        scale_embedding=True,
+        pad_token_id=tok.pad_id,
+        bos_token_id=tok.bos_id,
+        eos_token_id=tok.eos_id,
+        decoder_start_token_id=tok.bos_id,
+        is_decoder=True,
+        add_cross_attention=True,
     )
     model = VisionEncoderDecoderModel(encoder=encoder, decoder=TrOCRForCausalLM(dec_conf))
     _set_special_ids(model, tok, int(m.max_target_length))
@@ -134,8 +168,15 @@ def load_trained_ocr(run_dir: str | Path):
 
 
 @torch.no_grad()
-def recognize(model, tok: CharTokenizer, cfg: Config, image_paths: list[str], batch_size: int = 16,
-              num_beams: int = 1, device: str | None = None) -> list[str]:
+def recognize(
+    model,
+    tok: CharTokenizer,
+    cfg: Config,
+    image_paths: list[str],
+    batch_size: int = 16,
+    num_beams: int = 1,
+    device: str | None = None,
+) -> list[str]:
     device = device or pick_device()
     model.to(device).eval()
     transform = ImageTransform(cfg, train=False)
@@ -143,11 +184,18 @@ def recognize(model, tok: CharTokenizer, cfg: Config, image_paths: list[str], ba
     dtype = torch.bfloat16 if use_amp and torch.cuda.is_bf16_supported() else torch.float16
     out: list[str] = []
     for start in range(0, len(image_paths), batch_size):
-        pixel = torch.stack([transform(p) for p in image_paths[start:start + batch_size]]).to(device)
-        ctx = torch.autocast(device_type="cuda", dtype=dtype) if use_amp else contextlib.nullcontext()
+        pixel = torch.stack([transform(p) for p in image_paths[start : start + batch_size]]).to(
+            device
+        )
+        ctx = (
+            torch.autocast(device_type="cuda", dtype=dtype) if use_amp else contextlib.nullcontext()
+        )
         with ctx:
-            gen = model.generate(pixel_values=pixel, num_beams=num_beams,
-                                 max_new_tokens=int(cfg.model.max_target_length) + 1)
+            gen = model.generate(
+                pixel_values=pixel,
+                num_beams=num_beams,
+                max_new_tokens=int(cfg.model.max_target_length) + 1,
+            )
         out.extend(tok.decode(g) for g in gen.tolist())
     return out
 
@@ -162,15 +210,23 @@ def train_ocr(cfg: Config, run_test: bool = True) -> dict:
     log.info("Устройство: %s", device_summary())
     apply_vram_cap(cfg)
 
-    train_rows, valid_rows = read_jsonl(data_dir / "train.jsonl"), read_jsonl(data_dir / "valid.jsonl")
+    train_rows, valid_rows = read_jsonl(data_dir / "train.jsonl"), read_jsonl(
+        data_dir / "valid.jsonl"
+    )
     if cfg.train.get("max_valid_during_train"):
         valid_rows = valid_rows[: int(cfg.train.max_valid_during_train)]
-    tok = CharTokenizer.build([r["tgt"] for r in train_rows], min_freq=int(cfg.model.get("min_char_freq", 2)))
+    tok = CharTokenizer.build(
+        [r["tgt"] for r in train_rows], min_freq=int(cfg.model.get("min_char_freq", 2))
+    )
     log.info("Словарь глифов: %d токенов (train: %d изображений)", len(tok), len(train_rows))
     model = build_ocr_model(cfg, tok)
     bf16, fp16 = resolve_precision(cfg.train.get("precision", "auto"), "other")
-    log.info("OCR-модель: %.1fM параметров, bf16=%s fp16=%s",
-             sum(p.numel() for p in model.parameters()) / 1e6, bf16, fp16)
+    log.info(
+        "OCR-модель: %.1fM параметров, bf16=%s fp16=%s",
+        sum(p.numel() for p in model.parameters()) / 1e6,
+        bf16,
+        fp16,
+    )
 
     tr, gen = cfg.train, cfg.generation
     strategy = tr.get("eval_strategy", "epoch")
@@ -179,21 +235,33 @@ def train_ocr(cfg: Config, run_test: bool = True) -> dict:
         per_device_train_batch_size=int(tr.batch_size),
         per_device_eval_batch_size=int(gen.get("batch_size", tr.batch_size)),
         gradient_accumulation_steps=int(tr.get("grad_accum", 1)),
-        learning_rate=float(tr.lr), weight_decay=float(tr.get("weight_decay", 0.0)),
-        num_train_epochs=float(tr.epochs), max_steps=int(tr.get("max_steps", -1)),
-        warmup_ratio=float(tr.get("warmup_ratio", 0.0)), lr_scheduler_type=tr.get("scheduler", "cosine"),
+        learning_rate=float(tr.lr),
+        weight_decay=float(tr.get("weight_decay", 0.0)),
+        num_train_epochs=float(tr.epochs),
+        max_steps=int(tr.get("max_steps", -1)),
+        warmup_ratio=float(tr.get("warmup_ratio", 0.0)),
+        lr_scheduler_type=tr.get("scheduler", "cosine"),
         logging_steps=int(tr.get("logging_steps", 50)),
-        eval_strategy=strategy, save_strategy=strategy,
+        eval_strategy=strategy,
+        save_strategy=strategy,
         eval_steps=int(tr.get("eval_steps", 500)) if strategy == "steps" else None,
         save_steps=int(tr.get("eval_steps", 500)) if strategy == "steps" else None,
         save_total_limit=int(tr.get("save_total_limit", 2)),
-        load_best_model_at_end=True, metric_for_best_model="cer", greater_is_better=False,
-        predict_with_generate=True, generation_max_length=int(cfg.model.max_target_length) + 2,
+        load_best_model_at_end=True,
+        metric_for_best_model="cer",
+        greater_is_better=False,
+        predict_with_generate=True,
+        generation_max_length=int(cfg.model.max_target_length) + 2,
         generation_num_beams=int(gen.get("train_eval_beams", 1)),
-        bf16=bf16, fp16=fp16, dataloader_num_workers=int(tr.get("num_workers", 2)),
-        report_to=tr.get("report_to", "tensorboard"), logging_dir=str(run_dir / "logs"),
-        seed=int(cfg.seed), remove_unused_columns=False,
-        use_cpu=pick_device() == "cpu", dataloader_pin_memory=pick_device() == "cuda",
+        bf16=bf16,
+        fp16=fp16,
+        dataloader_num_workers=int(tr.get("num_workers", 2)),
+        report_to=tr.get("report_to", "tensorboard"),
+        logging_dir=str(run_dir / "logs"),
+        seed=int(cfg.seed),
+        remove_unused_columns=False,
+        use_cpu=pick_device() == "cpu",
+        dataloader_pin_memory=pick_device() == "cuda",
     )
 
     def compute_metrics(eval_pred):
@@ -201,14 +269,22 @@ def train_ocr(cfg: Config, run_test: bool = True) -> dict:
         if isinstance(preds, tuple):
             preds = preds[0]
         p_tok = [canon(tok.decode_tokens(p)) for p in preds.tolist()]
-        r_tok = [canon(tok.decode_tokens([x for x in l if x >= 0])) for l in labels.tolist()]
+        r_tok = [
+            canon(tok.decode_tokens([x for x in label if x >= 0])) for label in labels.tolist()
+        ]
         return {"cer": round(cer(p_tok, r_tok), 2)}
 
     callbacks = []
     if tr.get("early_stopping_patience"):
-        callbacks.append(EarlyStoppingCallback(early_stopping_patience=int(tr.early_stopping_patience)))
+        callbacks.append(
+            EarlyStoppingCallback(early_stopping_patience=int(tr.early_stopping_patience))
+        )
     trainer = Seq2SeqTrainer(
-        model=model, args=args, data_collator=collate, compute_metrics=compute_metrics, callbacks=callbacks,
+        model=model,
+        args=args,
+        data_collator=collate,
+        compute_metrics=compute_metrics,
+        callbacks=callbacks,
         train_dataset=OCRDataset(train_rows, tok, cfg, train=True),
         eval_dataset=OCRDataset(valid_rows, tok, cfg, train=False),
     )
@@ -231,7 +307,9 @@ def train_ocr(cfg: Config, run_test: bool = True) -> dict:
     return summary
 
 
-def evaluate_ocr(cfg: Config, run_dir: str | Path, split: str = "test", model=None, tok=None) -> dict:
+def evaluate_ocr(
+    cfg: Config, run_dir: str | Path, split: str = "test", model=None, tok=None
+) -> dict:
     from .seq2seq import write_predictions
 
     run_dir = Path(run_dir)
@@ -241,13 +319,23 @@ def evaluate_ocr(cfg: Config, run_dir: str | Path, split: str = "test", model=No
     if torch.cuda.is_available():
         torch.cuda.reset_peak_memory_stats()
     t0 = time.time()
-    preds = recognize(model, tok, cfg, [r.get("image", r.get("image_ref")) for r in rows], batch_size=int(cfg.generation.get("batch_size", 16)),
-                      num_beams=int(cfg.generation.get("num_beams", 1)))
+    preds = recognize(
+        model,
+        tok,
+        cfg,
+        [r.get("image", r.get("image_ref")) for r in rows],
+        batch_size=int(cfg.generation.get("batch_size", 16)),
+        num_beams=int(cfg.generation.get("num_beams", 1)),
+    )
     from .charset import glyph_cer_tokens
 
     metrics = {
-        "cer": round(cer([glyph_cer_tokens(p) for p in preds], [glyph_cer_tokens(r["tgt"]) for r in rows]), 2),
-        "n": len(rows), "split": split, "seconds": round(time.time() - t0, 1),
+        "cer": round(
+            cer([glyph_cer_tokens(p) for p in preds], [glyph_cer_tokens(r["tgt"]) for r in rows]), 2
+        ),
+        "n": len(rows),
+        "split": split,
+        "seconds": round(time.time() - t0, 1),
         "peak_vram_gb_inference": peak_vram_gb(),
     }
     write_predictions(rows, preds, run_dir / f"predictions_{split}.tsv")

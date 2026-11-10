@@ -77,8 +77,12 @@ def resolve_precision(requested: str, model_family: str) -> tuple[bool, bool]:
 def device_summary() -> dict:
     import torch
 
-    info = {"torch": torch.__version__, "cuda_available": torch.cuda.is_available(),
-            "mps_available": mps_available(), "device_used": pick_device()}
+    info = {
+        "torch": torch.__version__,
+        "cuda_available": torch.cuda.is_available(),
+        "mps_available": mps_available(),
+        "device_used": pick_device(),
+    }
     if torch.cuda.is_available():
         props = torch.cuda.get_device_properties(0)
         info.update(
@@ -95,7 +99,7 @@ def peak_vram_gb() -> float | None:
 
     if torch.cuda.is_available():
         return round(torch.cuda.max_memory_allocated() / 1024**3, 2)
-    if mps_available():  
+    if mps_available():
         return round(torch.mps.driver_allocated_memory() / 1024**3, 2)
     return None
 
@@ -128,4 +132,6 @@ def apply_vram_cap(cfg) -> None:
     total = torch.cuda.get_device_properties(0).total_memory / 1024**3
     if float(cap) < total:
         torch.cuda.set_per_process_memory_fraction(float(cap) / total, 0)
-        get_logger(__name__).info("Видеопамять ограничена до %.1f ГБ из %.1f ГБ (train.max_vram_gb)", float(cap), total)
+        get_logger(__name__).info(
+            "Видеопамять ограничена до %.1f ГБ из %.1f ГБ (train.max_vram_gb)", float(cap), total
+        )

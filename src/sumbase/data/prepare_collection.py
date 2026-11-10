@@ -14,7 +14,9 @@ def prepare_collection(cfg):
     dest = Path(cfg.paths.data_dir)
     if folder.resolve() == dest.resolve():
         raise ValueError("paths.data_dir must not overwrite canonical collection exports")
-    test_source = cfg.data.get("test_source", "external_candidates" if cfg.task != "ocr" else "test")
+    test_source = cfg.data.get(
+        "test_source", "external_candidates" if cfg.task != "ocr" else "test"
+    )
     stats = {"collection_root": str(root), "collection_task": task, "test_source": test_source}
     for split in ("train", "valid", "test"):
         source_split = test_source if split == "test" else split
@@ -31,6 +33,7 @@ def prepare_collection(cfg):
                     raise ValueError("data.input_normalization: none | cdli_ascii")
                 if cfg.task == "mt" and normalization == "cdli_ascii":
                     from ..normalize import to_cdli_ascii
+
                     row["src_original"] = row["src"]
                     row["src"] = to_cdli_ascii(row["src"])
                 # Лимиты модели применяются при инференсе, не к эталонам.

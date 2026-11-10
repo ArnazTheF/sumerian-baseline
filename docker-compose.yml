@@ -1,12 +1,11 @@
-
 x-common: &common
   working_dir: /app
   user: "${HOST_UID:-0}:${HOST_GID:-0}"
-  shm_size: "8gb"                      
+  shm_size: "8gb"
   environment:
-    - HF_TOKEN=${HF_TOKEN:-}          
+    - HF_TOKEN=${HF_TOKEN:-}
     - SUMBASE_LOGLEVEL=${SUMBASE_LOGLEVEL:-INFO}
-    - TASKS=${TASKS:-}                
+    - TASKS=${TASKS:-}
   volumes:
     - ./src:/app/src
     - ./configs:/app/configs

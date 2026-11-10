@@ -11,7 +11,7 @@ class Config(dict):
     def __getattr__(self, key: str) -> Any:
         try:
             value = self[key]
-        except KeyError as exc:  
+        except KeyError as exc:
             raise AttributeError(f"В конфиге нет ключа '{key}'") from exc
         return Config(value) if isinstance(value, dict) and not isinstance(value, Config) else value
 
@@ -44,13 +44,13 @@ def _deep_to_config(obj: Any) -> Any:
 
 
 def load_config(path: str | Path, overrides: list[str] | None = None) -> Config:
-    with open(path, encoding="utf-8") as fh:
-        raw = yaml.safe_load(fh) or {}
-    for item in overrides or []:
-        if "=" not in item:
-            raise ValueError(f"Переопределение должно иметь вид key.sub=value, получено: {item}")
-        key, value = item.split("=", 1)
-        _set_dotted(raw, key.strip(), yaml.safe_load(value))
+    from hydra import compose, initialize_config_dir
+    from omegaconf import OmegaConf
+
+    config_path = Path(path).resolve()
+    with initialize_config_dir(version_base="1.3", config_dir=str(config_path.parent)):
+        composed = compose(config_name=config_path.stem, overrides=overrides or [])
+    raw = OmegaConf.to_container(composed, resolve=True)
     for required in ("task", "run_name", "paths"):
         if required not in raw:
             raise ValueError(f"В конфиге {path} нет обязательного поля '{required}'")

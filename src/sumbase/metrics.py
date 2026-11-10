@@ -19,6 +19,8 @@ def text_metrics(preds: list[str], refs: list[str]) -> dict:
         "bleu": round(sacrebleu.corpus_bleu(preds, [refs]).score, 2),
         "chrf": round(sacrebleu.corpus_chrf(preds, [refs]).score, 2),
         "cer": round(cer(preds, refs), 2),
-        "exact_match": round(100.0 * sum(p == r for p, r in zip(preds, refs)) / max(len(refs), 1), 2),
+        "exact_match": round(
+            100.0 * sum(p == r for p, r in zip(preds, refs)) / max(len(refs), 1), 2
+        ),
         "n": len(refs),
     }

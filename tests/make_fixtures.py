@@ -11,14 +11,55 @@ ROOT = Path(__file__).parent / "fixtures"
 rng = random.Random(0)
 
 GLYPHS = [chr(0x12000 + i) for i in range(0, 120, 3)]
-READINGS = ["ba", "ka", "lu2", "dug4", "sze", "ma", "an", "ki", "e2", "gal", "ur", "mu", "na", "ni", "ta",
-            "da", "la", "ra", "ga", "ab", "u4", "iti", "sila3", "gin2", "udu", "gu4", "kiszib3", "dumu",
-            "lugal", "ensi2", "{d}", "{ki}", "sza3", "szu", "ti", "zi", "gi", "me", "nu", "bi"]
+READINGS = [
+    "ba",
+    "ka",
+    "lu2",
+    "dug4",
+    "sze",
+    "ma",
+    "an",
+    "ki",
+    "e2",
+    "gal",
+    "ur",
+    "mu",
+    "na",
+    "ni",
+    "ta",
+    "da",
+    "la",
+    "ra",
+    "ga",
+    "ab",
+    "u4",
+    "iti",
+    "sila3",
+    "gin2",
+    "udu",
+    "gu4",
+    "kiszib3",
+    "dumu",
+    "lugal",
+    "ensi2",
+    "{d}",
+    "{ki}",
+    "sza3",
+    "szu",
+    "ti",
+    "zi",
+    "gi",
+    "me",
+    "nu",
+    "bi",
+]
 SIGN = dict(zip(GLYPHS, READINGS))
 
 
 def make_line() -> tuple[str, str]:
-    words = [[rng.choice(GLYPHS) for _ in range(rng.randint(1, 3))] for _ in range(rng.randint(1, 3))]
+    words = [
+        [rng.choice(GLYPHS) for _ in range(rng.randint(1, 3))] for _ in range(rng.randint(1, 3))
+    ]
     glyph_line = "".join("".join(w) for w in words)
     translit_line = " ".join("-".join(SIGN[g] for g in w) for w in words)
     return glyph_line, translit_line

@@ -23,7 +23,9 @@ def _glyph_lines(surface: str) -> tuple[list[str], str]:
     return [x for x in surface.split(sep) if x.strip()], sep
 
 
-def chunk_pair(glyphs: str, translit: str, mode: str, src_max_chars: int) -> tuple[list[tuple[str, str]], str]:
+def chunk_pair(
+    glyphs: str, translit: str, mode: str, src_max_chars: int
+) -> tuple[list[tuple[str, str]], str]:
     if mode == "tablet":
         return [(glyphs, translit)], "tablet"
     g_surf, t_surf = _split_surfaces(glyphs), _split_surfaces(translit)
@@ -59,19 +61,25 @@ def _load_rows(cfg: Config) -> dict[str, list[dict]]:
     if data.source == "hf":
         from datasets import load_dataset
 
-        ds = load_dataset(data.get("hf_name", "colesimmons/SumTablets"), revision=data.get("hf_revision"))
-        return {split: [{c: r.get(c) for c in cols} for r in ds[hf]] for split, hf in HF_SPLITS.items()}
+        ds = load_dataset(
+            data.get("hf_name", "colesimmons/SumTablets"), revision=data.get("hf_revision")
+        )
+        return {
+            split: [{c: r.get(c) for c in cols} for r in ds[hf]] for split, hf in HF_SPLITS.items()
+        }
     if data.source == "local":
         import pandas as pd
 
         df = pd.read_csv(data.local_csv).fillna("")
-        if "split" not in df.columns: 
+        if "split" not in df.columns:
             buckets = df["id"].map(lambda x: sum(map(ord, str(x))) % 20)
             df["split"] = ["test" if b == 0 else "valid" if b == 1 else "train" for b in buckets]
         out = {}
         for split in HF_SPLITS:
             sub = df[df["split"] == split]
-            out[split] = [{c: (row[c] if c in sub.columns else "") for c in cols} for _, row in sub.iterrows()]
+            out[split] = [
+                {c: (row[c] if c in sub.columns else "") for c in cols} for _, row in sub.iterrows()
+            ]
         return out
     raise ValueError("data.source для translit: hf | local")
 
@@ -84,13 +92,20 @@ def prepare_translit(cfg: Config) -> dict:
     src_max, tgt_max = int(data.get("src_max_chars", 120)), int(data.get("tgt_max_chars", 600))
     periods = set(data.get("periods") or [])
     genres = set(data.get("genres") or [])
-    limits = {"train": data.get("max_train_tablets"), "valid": data.get("max_valid_tablets"),
-              "test": data.get("max_test_tablets")}
+    limits = {
+        "train": data.get("max_train_tablets"),
+        "valid": data.get("max_valid_tablets"),
+        "test": data.get("max_test_tablets"),
+    }
 
     rows_by_split = _load_rows(cfg)
     stats: dict = {"chunk_mode": mode, "src_max_chars": src_max, "tgt_max_chars": tgt_max}
     for split, rows in rows_by_split.items():
-        rows = [r for r in rows if (not periods or r["period"] in periods) and (not genres or r["genre"] in genres)]
+        rows = [
+            r
+            for r in rows
+            if (not periods or r["period"] in periods) and (not genres or r["genre"] in genres)
+        ]
         rng.shuffle(rows)
         if limits[split] is not None:
             rows = rows[: int(limits[split])]
@@ -104,10 +119,22 @@ def prepare_translit(cfg: Config) -> dict:
                 if len(g) > src_max or len(t) > tgt_max:
                     dropped += 1
                     continue
-                examples.append({"id": f"{r['id']}_{k}", "tablet": r["id"], "src": g, "tgt": t,
-                                 "period": r["period"], "genre": r["genre"]})
-        stats[split] = {"tablets": len(rows), "examples": write_jsonl(examples, out_dir / f"{split}.jsonl"),
-                        "dropped_too_long": dropped, "chunking_used": modes}
+                examples.append(
+                    {
+                        "id": f"{r['id']}_{k}",
+                        "tablet": r["id"],
+                        "src": g,
+                        "tgt": t,
+                        "period": r["period"],
+                        "genre": r["genre"],
+                    }
+                )
+        stats[split] = {
+            "tablets": len(rows),
+            "examples": write_jsonl(examples, out_dir / f"{split}.jsonl"),
+            "dropped_too_long": dropped,
+            "chunking_used": modes,
+        }
     write_json(stats, out_dir / "stats.json")
     log.info("Translit-данные готовы: %s", stats)
     return stats

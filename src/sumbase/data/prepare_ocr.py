@@ -36,7 +36,11 @@ def prepare_ocr(cfg: Config) -> dict:
     max_glyphs = int(data.get("max_target_tokens", 200))
     min_glyphs = int(data.get("min_target_tokens", 3))
     max_side = int(data.get("image_max_side", 1024))
-    limits = {"train": data.get("max_train", 2000), "valid": data.get("max_valid", 200), "test": data.get("max_test", 300)}
+    limits = {
+        "train": data.get("max_train", 2000),
+        "valid": data.get("max_valid", 200),
+        "test": data.get("max_test", 300),
+    }
     max_scan = int(data.get("max_scan_factor", 20))
 
     if data.source == "local":
@@ -45,10 +49,19 @@ def prepare_ocr(cfg: Config) -> dict:
         stats = {}
         for split in ("train", "valid", "test"):
             lim = limits[split]
-            sel = [r for r in rows if r.get("split", "train") == split][: None if lim is None else int(lim)]
-            out = [{"id": str(r.get("id", i)), "image": portable(root / r["image"]),
-                    "tgt": protect_markers(clean_ws(r["glyphs"])), "period": r.get("period", ""),
-                    "genre": r.get("genre", "")} for i, r in enumerate(sel)]
+            sel = [r for r in rows if r.get("split", "train") == split][
+                : None if lim is None else int(lim)
+            ]
+            out = [
+                {
+                    "id": str(r.get("id", i)),
+                    "image": portable(root / r["image"]),
+                    "tgt": protect_markers(clean_ws(r["glyphs"])),
+                    "period": r.get("period", ""),
+                    "genre": r.get("genre", ""),
+                }
+                for i, r in enumerate(sel)
+            ]
             stats[split] = write_jsonl(out, out_dir / f"{split}.jsonl")
         write_json(stats, out_dir / "stats.json")
         return stats
@@ -60,11 +73,19 @@ def prepare_ocr(cfg: Config) -> dict:
 
     periods = set(data.get("periods") or [])
     reserved_ids: set[str] = set()
-    stats: dict = {"hf_config": data.get("hf_config", "photo_only"), "max_target_tokens": max_glyphs}
+    stats: dict = {
+        "hf_config": data.get("hf_config", "photo_only"),
+        "max_target_tokens": max_glyphs,
+    }
     for split, hf_split in HF_SPLITS:
         limit = int(limits[split])
-        ds = load_dataset(data.get("hf_name", "colesimmons/SumTablets_Photos"), data.get("hf_config", "photo_only"),
-                          split=hf_split, streaming=True, revision=data.get("hf_revision"))
+        ds = load_dataset(
+            data.get("hf_name", "colesimmons/SumTablets_Photos"),
+            data.get("hf_config", "photo_only"),
+            split=hf_split,
+            streaming=True,
+            revision=data.get("hf_revision"),
+        )
         kept, scanned, skipped_len, skipped_leak = [], 0, 0, 0
         per_id: dict[str, int] = {}
         for row in ds:
@@ -90,14 +111,26 @@ def prepare_ocr(cfg: Config) -> dict:
             except Exception as exc:
                 log.warning("Пропускаю %s: %s", tid, exc)
                 continue
-            kept.append({"id": f"{tid}_{k}", "tablet": tid, "image": portable(img_path), "tgt": tgt,
-                         "period": row.get("period", ""), "genre": row.get("genre", "")})
+            kept.append(
+                {
+                    "id": f"{tid}_{k}",
+                    "tablet": tid,
+                    "image": portable(img_path),
+                    "tgt": tgt,
+                    "period": row.get("period", ""),
+                    "genre": row.get("genre", ""),
+                }
+            )
             if len(kept) % 200 == 0:
                 log.info("%s: сохранено %d / %d", split, len(kept), limit)
         if split != "train":
             reserved_ids.update(r["tablet"] for r in kept)
-        stats[split] = {"examples": write_jsonl(kept, out_dir / f"{split}.jsonl"), "scanned": scanned,
-                        "skipped_too_long_or_short": skipped_len, "skipped_leak": skipped_leak}
+        stats[split] = {
+            "examples": write_jsonl(kept, out_dir / f"{split}.jsonl"),
+            "scanned": scanned,
+            "skipped_too_long_or_short": skipped_len,
+            "skipped_leak": skipped_leak,
+        }
         log.info("%s: %s", split, stats[split])
     write_json(stats, out_dir / "stats.json")
     return stats
